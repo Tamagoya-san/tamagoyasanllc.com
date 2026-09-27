@@ -51,6 +51,19 @@
     marked.forEach((el) => el.addEventListener('pointerenter', () => slip(el)));
   }
 
+  // The film is a picture until it is asked for: nothing is loaded from YouTube before then.
+  document.querySelectorAll('.film').forEach((film) => {
+    film.addEventListener('click', () => {
+      const frame = document.createElement('iframe');
+      frame.src = `https://www.youtube-nocookie.com/embed/${film.dataset.video}?autoplay=1&rel=0`;
+      frame.title = film.getAttribute('aria-label');
+      frame.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen';
+      frame.allowFullscreen = true;
+      film.replaceChildren(frame);
+      film.style.cursor = 'default';
+    }, { once: true });
+  });
+
   // Reveal on the way in.
   const shown = new IntersectionObserver((entries) => {
     for (const e of entries) {

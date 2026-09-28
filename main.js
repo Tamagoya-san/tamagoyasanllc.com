@@ -1,5 +1,9 @@
 (() => {
   const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const coarse = matchMedia('(pointer: coarse)').matches;
+  // Set while the page is moving. Painting the sea mid-gesture uploads a new frame
+  // over the one the phone is sliding, so the hills and the water step instead of gliding.
+  let scrolledAt = 0;
 
   // ── Grain: a few tiles of noise, one dot per screen pixel, swapped a dozen times a second. ──
   const side = 160;
@@ -23,6 +27,7 @@
   if (!still) {
     let n = 0;
     setInterval(() => {
+      if (performance.now() - scrolledAt < 180) return;
       n = (n + 1) % tiles.length;
       grains.forEach((g) => { g.style.backgroundImage = tiles[n]; });
     }, 83);
@@ -43,9 +48,10 @@
     return c;
   })();
 
-  // The pointer, shared by every sea. On a touch screen, the finger.
+  // The pointer, shared by every sea. A finger is for scrolling, so it does not steer the water.
   const hand = { x: -1, y: -1, speed: 0 };
   const follow = (e) => {
+    if (e.pointerType === 'touch') return;
     if (hand.x >= 0) hand.speed += Math.abs(e.clientX - hand.x) + Math.abs(e.clientY - hand.y);
     hand.x = e.clientX;
     hand.y = e.clientY;
@@ -56,6 +62,38 @@
   // Resolution of the seas. Slow machines start lower, and any machine steps down if frames run long.
   const scales = [1, .75, .55, .4];
   let quality = (navigator.hardwareConcurrency || 8) <= 4 || (navigator.deviceMemory || 8) <= 4 ? 1 : 0;
+
+  // Phone browsers resize the layout as the address bar shows and hides. Hold each blue
+  // band at the height it had when the width last changed, so the sea is not restretched.
+  const fitBlue = () => {
+    document.querySelectorAll('.blue').forEach((el) => {
+      if (!coarse) {
+        el.style.height = '';
+        el.style.minHeight = '';
+        return;
+      }
+      const width = Math.round(el.clientWidth);
+      if (!width || el.dataset.lockW === String(width)) return;
+      el.style.height = 'auto';
+      el.style.minHeight = '';
+      const height = el.offsetHeight;
+      el.dataset.lockW = String(width);
+      el.style.height = `${height}px`;
+      el.style.minHeight = `${height}px`;
+    });
+  };
+  fitBlue();
+
+  // One stream of numbers, so a rebuild draws the same hills instead of a new skyline.
+  const rng = (seed) => {
+    let a = seed >>> 0;
+    return () => {
+      a = (a + 0x6d2b79f5) >>> 0;
+      let t = Math.imul(a ^ (a >>> 15), 1 | a);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  };
 
   const seas = [...document.querySelectorAll('.sea')].map((canvas) => {
     const pen = canvas.getContext('2d');
@@ -72,24 +110,29 @@
 
     const build = () => {
       const k = Math.min(devicePixelRatio, 1.5) * scales[quality];
-      w = canvas.width = base.width = Math.round(canvas.clientWidth * k);
-      h = canvas.height = base.height = Math.round(canvas.clientHeight * k);
+      const nextW = Math.max(1, Math.round(canvas.clientWidth * k));
+      const nextH = Math.max(1, Math.round(canvas.clientHeight * k));
+      if (lights.length && Math.abs(nextW - w) < 2 && Math.abs(nextH - h) < 2) return false;
+      w = canvas.width = base.width = nextW;
+      h = canvas.height = base.height = nextH;
+      const rand = rng(dusk ? 0xa31f : 0x17c2);
       const count = Math.round((w * h) / (dusk ? 900 : 420));
       lights = Array.from({ length: count }, () => {
-        const z = Math.pow(Math.random(), 2.3);
+        const z = Math.pow(rand(), 2.3);
         return {
-          x: Math.random(),
+          x: rand(),
           z,
-          size: (1.4 + z * 9 + Math.random() * 2.5) * k,
-          speed: .6 + Math.random() * 2.2,
-          phase: Math.random() * Math.PI * 2,
-          sharp: 3 + Math.random() * 9,
+          size: (1.4 + z * 9 + rand() * 2.5) * k,
+          speed: .6 + rand() * 2.2,
+          phase: rand() * Math.PI * 2,
+          sharp: 3 + rand() * 9,
         };
       });
+      const hill = rng(dusk ? 0x55e1 : 0xc0de);
       let hills = [];
       let y = 0;
       for (let i = 0; i <= 90; i++) {
-        y += (Math.random() - .5) * .35;
+        y += (hill() - .5) * .35;
         y *= .96;
         hills.push(y);
       }
@@ -97,6 +140,7 @@
         hills = hills.map((v, i, a) => (a[Math.max(0, i - 1)] + v * 2 + a[Math.min(a.length - 1, i + 1)]) / 4);
       }
       water(base.getContext('2d'), hills);
+      return true;
     };
 
     // Everything that does not move, drawn once per size: sky, sea, the far hills, the horizon's haze.
@@ -200,7 +244,11 @@
   let resizing = 0;
   addEventListener('resize', () => {
     clearTimeout(resizing);
-    resizing = setTimeout(() => seas.forEach((s) => { s.build(); s.paint(performance.now() / 1000); }), 150);
+    resizing = setTimeout(() => {
+      fitBlue();
+      const t = performance.now() / 1000;
+      seas.forEach((s) => { if (s.build()) s.paint(t); });
+    }, 150);
   });
   if (still) {
     seas.forEach((s) => s.paint(4));
@@ -209,8 +257,19 @@
     let spent = 0;
     let work = 0;
     let frames = 0;
+    let clock = 0;
+    let lastNow = 0;
     const loop = (now) => {
-      const t = now / 1000;
+      requestAnimationFrame(loop);
+      const step = lastNow ? now - lastNow : 16;
+      lastNow = now;
+      // Keep the clock still too, or the glitter would leap to where it would have drifted.
+      if (now - scrolledAt < 180) {
+        last = 0;
+        return;
+      }
+      clock += Math.min(Math.max(step, 0), 40);
+      const t = clock / 1000;
       const visible = seas.filter((s) => s.seen);
       const begun = performance.now();
       visible.forEach((s) => s.paint(t));
@@ -232,7 +291,6 @@
           frames = 0;
         }
       }
-      requestAnimationFrame(loop);
     };
     requestAnimationFrame(loop);
   }
@@ -248,7 +306,13 @@
     });
     bar.classList.toggle('is-light', under?.dataset.theme === 'light');
   };
-  addEventListener('scroll', tone, { passive: true });
+  let toneQueued = false;
+  addEventListener('scroll', () => {
+    scrolledAt = performance.now();
+    if (toneQueued) return;
+    toneQueued = true;
+    requestAnimationFrame(() => { toneQueued = false; tone(); });
+  }, { passive: true });
   tone();
 
   // ── Arrival ──

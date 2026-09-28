@@ -53,23 +53,27 @@
   addEventListener('pointermove', follow, { passive: true });
   addEventListener('pointerdown', follow, { passive: true });
 
+  // Resolution of the seas. Slow machines start lower, and any machine steps down if frames run long.
+  const scales = [1, .75, .55, .4];
+  let quality = (navigator.hardwareConcurrency || 8) <= 4 || (navigator.deviceMemory || 8) <= 4 ? 1 : 0;
+
   const seas = [...document.querySelectorAll('.sea')].map((canvas) => {
     const pen = canvas.getContext('2d');
+    const base = document.createElement('canvas');
     const dusk = canvas.closest('.contact') !== null;
     const horizon = dusk ? .5 : .34;
     let w = 0;
     let h = 0;
     let lights = [];
-    let hills = [];
     let seen = false;
     // Where the light lies on the water: a path from the horizon toward the viewer, like the moon's.
     // It drifts after the pointer slowly, and the water stirs a little when the pointer moves.
     const path = { x: .62, to: .62, open: 0, stir: 0 };
 
     const build = () => {
-      const k = Math.min(devicePixelRatio, 1.5);
-      w = canvas.width = Math.round(canvas.clientWidth * k);
-      h = canvas.height = Math.round(canvas.clientHeight * k);
+      const k = Math.min(devicePixelRatio, 1.5) * scales[quality];
+      w = canvas.width = base.width = Math.round(canvas.clientWidth * k);
+      h = canvas.height = base.height = Math.round(canvas.clientHeight * k);
       const count = Math.round((w * h) / (dusk ? 900 : 420));
       lights = Array.from({ length: count }, () => {
         const z = Math.pow(Math.random(), 2.3);
@@ -82,7 +86,7 @@
           sharp: 3 + Math.random() * 9,
         };
       });
-      hills = [];
+      let hills = [];
       let y = 0;
       for (let i = 0; i <= 90; i++) {
         y += (Math.random() - .5) * .35;
@@ -92,15 +96,11 @@
       for (let pass = 0; pass < 4; pass++) {
         hills = hills.map((v, i, a) => (a[Math.max(0, i - 1)] + v * 2 + a[Math.min(a.length - 1, i + 1)]) / 4);
       }
+      water(base.getContext('2d'), hills);
     };
 
-    const paint = (t) => {
-      const box = canvas.getBoundingClientRect();
-      const over = hand.x >= 0 && hand.y >= box.top && hand.y <= box.bottom;
-      if (over) path.to = Math.min(1, Math.max(0, (hand.x - box.left) / box.width));
-      path.x += (path.to - path.x) * .025;
-      path.open += ((over ? 1 : .55) - path.open) * .02;
-      path.stir = Math.min(1, path.stir * .965 + (over ? hand.speed : 0) * .0009);
+    // Everything that does not move, drawn once per size: sky, sea, the far hills, the horizon's haze.
+    const water = (pen, hills) => {
       const hy = h * horizon;
       const sky = pen.createLinearGradient(0, 0, 0, hy);
       sky.addColorStop(0, dusk ? '#0b2470' : '#1c5cc0');
@@ -135,6 +135,19 @@
       haze.addColorStop(1, 'rgba(160,205,255,0)');
       pen.fillStyle = haze;
       pen.fillRect(0, hy - h * .06, w, h * .22);
+    };
+
+    const paint = (t) => {
+      const box = canvas.getBoundingClientRect();
+      const over = hand.x >= 0 && hand.y >= box.top && hand.y <= box.bottom;
+      if (over) path.to = Math.min(1, Math.max(0, (hand.x - box.left) / box.width));
+      path.x += (path.to - path.x) * .025;
+      path.open += ((over ? 1 : .55) - path.open) * .02;
+      path.stir = Math.min(1, path.stir * .965 + (over ? hand.speed : 0) * .0009);
+      const hy = h * horizon;
+      pen.globalCompositeOperation = 'copy';
+      pen.drawImage(base, 0, 0);
+      pen.globalCompositeOperation = 'source-over';
 
       // the path itself: a faint column of light on the water
       const px = path.x * w;
@@ -192,10 +205,33 @@
   if (still) {
     seas.forEach((s) => s.paint(4));
   } else {
+    let last = 0;
+    let spent = 0;
+    let work = 0;
+    let frames = 0;
     const loop = (now) => {
       const t = now / 1000;
-      for (const s of seas) if (s.seen) s.paint(t);
+      const visible = seas.filter((s) => s.seen);
+      const begun = performance.now();
+      visible.forEach((s) => s.paint(t));
       hand.speed = 0;
+      const gap = now - last;
+      last = now;
+      // A gap near a second or more is a hidden or throttled tab, not a slow machine.
+      if (visible.length && gap < 900) {
+        spent += gap;
+        work += performance.now() - begun;
+        frames++;
+        if (frames === 30 || (frames >= 3 && spent > 1500)) {
+          if ((spent / frames > 26 || work / frames > 12) && quality < scales.length - 1) {
+            quality++;
+            seas.forEach((s) => s.build());
+          }
+          spent = 0;
+          work = 0;
+          frames = 0;
+        }
+      }
       requestAnimationFrame(loop);
     };
     requestAnimationFrame(loop);

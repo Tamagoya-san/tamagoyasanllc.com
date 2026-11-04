@@ -31,7 +31,7 @@
 
 ## 実績
 
-- POCKET COLOR（iOS / iPadOS アプリ、自社開発）: フィルムの色と粒子で仕上げる、写真・動画のためのiOSアプリ。RAW現像、マスク補正、多重露光、動画編集、ルックを当てたままの撮影まで、すべて端末の中だけで完結します。App Store 近日公開。
+- POCKET COLOR（iOS / iPadOS アプリ、自社開発）: 映画用フィルムを模した10種のルックと、物理から作る粒子で仕上げる、写真・動画のためのiOSアプリ。RAW現像、マスク補正、多重露光、動画編集、ルックを当てたままの撮影まで、すべて端末の中だけで完結します。基本無料（元の画質での書き出しは¥500の買い切り）。App Store で配信中: https://apps.apple.com/jp/app/pocket-color/id6816624728
 - Verno Medical Science（ウェブサイト）: 慶應義塾大学医学部形成外科の医師陣による、再生・若返り医療の研究グループのサイト。https://verno-medical-science.com/
 - VERNO SKIN（ウェブサイト / EC）: 皮膚科学研究チームが立ち上げたスキンケアブランドの公式オンラインストア。https://www.verno-cosme.com/
 - AQUBE MUSIC PRODUCTS（写真）: ギターストラップを中心とする音楽用品ブランドの、アーティスト撮影。
@@ -40,4 +40,5 @@
 ## リンク
 
 - 公式サイト: https://tamagoyasanllc.com/
+- POCKET COLOR（App Store）: https://apps.apple.com/jp/app/pocket-color/id6816624728
 - POCKET COLOR 規約・プライバシー: https://tamagoya-san.github.io/pocketcolor-lab-legal/legal/

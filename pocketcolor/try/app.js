@@ -314,7 +314,7 @@ const recipeNote = h('p', { class: 'note' });
 const lookNote = h('p', { class: 'note' });
 const recipeRow = h('div', { class: 'recipes', role: 'group', 'aria-label': 'レシピ' }, RECIPES.map(r =>
   h('button', { class: 'recipe', type: 'button', 'data-id': r.id, onclick: () => chooseRecipe(r.id) },
-    h('canvas', { width: 168, height: 220 }), h('span', {}, r.name))));
+    h('canvas', { width: 252, height: 330 }), h('span', {}, r.name))));
 const lookRow = h('div', { class: 'strip looks', role: 'group', 'aria-label': 'フィルム' }, LOOKS.map(l =>
   h('button', { class: 'pill', type: 'button', 'data-id': l.id, onclick: () => chooseLook(l.id) }, l.name)));
 const camStrip = $('#camStrip');
@@ -404,7 +404,7 @@ function thumbsSoon(wait = 380) {
   thumbTimer = setTimeout(thumbs, wait);
 }
 async function thumbs() {
-  const run = ++thumbRun, [w, h] = state.size, k = 240 / Math.max(w, h);
+  const run = ++thumbRun, [w, h] = state.size, k = Math.min(1, 400 / Math.max(w, h));
   const tw = Math.max(2, Math.round(w * k)), th = Math.max(2, Math.round(h * k));
   const small = document.createElement('canvas');
   small.width = tw; small.height = th;

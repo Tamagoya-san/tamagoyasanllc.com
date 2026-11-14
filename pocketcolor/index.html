@@ -1,0 +1,435 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>POCKET COLOR｜選ぶだけで、写真が映画の色になる写真加工アプリ</title>
+<meta name="description" content="エモい写真にしたいのに、うまく加工できない人へ。POCKET COLOR は、12のレシピから選ぶだけで写真が映画の色になるiPhoneアプリです。編集はぜんぶ無料、課金は元の画質での書き出し ¥500 の買い切りだけ。月額なし・広告なし・登録なし。">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<link rel="canonical" href="https://tamagoyasanllc.com/pocketcolor/">
+<meta name="theme-color" content="#0b0b0c">
+<meta name="apple-itunes-app" content="app-id=6816624728">
+<meta property="og:site_name" content="合同会社たまご屋さん">
+<meta property="og:locale" content="ja_JP">
+<meta property="og:type" content="website">
+<meta property="og:title" content="POCKET COLOR — 選ぶだけで、写真が映画の色になる">
+<meta property="og:description" content="12のレシピから選ぶだけ。編集はぜんぶ無料、課金は ¥500 の買い切りだけ。">
+<meta property="og:url" content="https://tamagoyasanllc.com/pocketcolor/">
+<meta property="og:image" content="https://tamagoyasanllc.com/pocketcolor/assets/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../assets/icon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="assets/icon.png">
+<link rel="preload" as="image" href="assets/fine.jpg">
+<style>
+  :root {
+    --ink: #0b0b0c; --panel: #151517; --paper: #f3eee4; --hush: rgba(243, 238, 228, .64);
+    --line: rgba(243, 238, 228, .14); --ember: #f0733a;
+    --serif: "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif JP", serif;
+    --jp: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Yu Gothic", sans-serif;
+    --en: "Avenir Next", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    --pad: clamp(20px, 5vw, 56px);
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+  body { margin: 0; background: var(--ink); color: var(--paper); font-family: var(--jp); font-size: 16px; line-height: 1.85; letter-spacing: .02em; -webkit-font-smoothing: antialiased; overflow-x: clip; }
+  img { display: block; max-width: 100%; height: auto; }
+  a { color: inherit; }
+  button { font: inherit; color: inherit; }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 var(--pad); }
+  section { padding: clamp(72px, 12vw, 140px) 0; }
+  .kicker { margin: 0 0 16px; font-family: var(--en); font-weight: 600; font-size: 13px; letter-spacing: .3em; color: var(--ember); text-transform: uppercase; }
+  h1, h2 { margin: 0; font-family: var(--serif); font-weight: 600; letter-spacing: .03em; line-height: 1.4; }
+  h1 { font-size: clamp(34px, 8.6vw, 54px); }
+  h2 { font-size: clamp(28px, 6.6vw, 48px); }
+  .lead { margin: 20px 0 0; color: var(--hush); font-size: clamp(15px, 3.9vw, 18px); max-width: 34em; }
+  .nb { display: inline-block; }
+
+  /* The one thing every screen asks for. */
+  .get { display: inline-flex; align-items: center; justify-content: center; gap: 12px; min-height: 58px; padding: 12px 30px; border-radius: 99px; background: var(--paper); color: #111; font-weight: 700; font-size: 17px; text-decoration: none; letter-spacing: .04em; transition: transform .25s, background .25s; }
+  .get:hover { transform: translateY(-2px); background: #fff; }
+  .get svg { width: 22px; height: 22px; flex: none; }
+  .get small { display: block; font-size: 11px; font-weight: 600; letter-spacing: .06em; opacity: .7; line-height: 1.2; }
+  .get span { display: block; line-height: 1.3; text-align: left; }
+  .fine { margin: 14px 0 0; font-size: 12.5px; color: var(--hush); }
+  /* The other way in: the same colour in the browser first, with one's own photograph. */
+  .or { margin: 12px 0 0; }
+  .try { display: inline-flex; align-items: center; gap: 9px; min-height: 48px; padding: 8px 22px; border-radius: 99px; border: 1px solid rgba(243, 238, 228, .45); font-weight: 700; font-size: 14.5px; text-decoration: none; letter-spacing: .04em; transition: background .25s; }
+  .try:hover { background: rgba(243, 238, 228, .1); }
+  .try svg { width: 16px; height: 16px; flex: none; }
+
+  .top { position: absolute; z-index: 5; left: 0; right: 0; top: 0; padding: max(14px, env(safe-area-inset-top)) var(--pad) 14px; display: flex; align-items: center; gap: 12px; }
+  .top img { width: 34px; height: 34px; border-radius: 8px; }
+  .top b { font-family: var(--en); font-weight: 700; letter-spacing: .12em; font-size: 15px; }
+  .top a { margin-left: auto; font-size: 13px; font-weight: 700; text-decoration: none; padding: 7px 16px; border-radius: 99px; border: 1px solid rgba(243, 238, 228, .5); }
+
+  /* Hero */
+  .hero { padding: 96px 0 clamp(56px, 9vw, 110px); position: relative; }
+  .hero .wrap { display: grid; gap: 36px; }
+  .hero .get { margin-top: 30px; }
+
+  /* Before and after, with a line to drag. */
+  .ba { position: relative; aspect-ratio: 4 / 5; border-radius: 18px; overflow: hidden; background: #000; touch-action: pan-y; cursor: ew-resize; user-select: none; -webkit-user-select: none; box-shadow: 0 30px 80px rgba(0, 0, 0, .6); }
+  .ba img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 62%; pointer-events: none; }
+  .ba .before { clip-path: inset(0 calc(100% - var(--x, 50%)) 0 0); }
+  .ba .bar { position: absolute; top: 0; bottom: 0; left: var(--x, 50%); width: 2px; margin-left: -1px; background: var(--paper); }
+  .ba .bar::after { content: "‹ ›"; position: absolute; left: 50%; top: 50%; width: 46px; height: 46px; margin: -23px; border-radius: 50%; background: var(--paper); color: #111; font-weight: 700; font-size: 17px; letter-spacing: .1em; display: grid; place-items: center; box-shadow: 0 6px 20px rgba(0, 0, 0, .5); }
+  .ba .l, .ba .r { position: absolute; top: 14px; padding: 4px 12px; border-radius: 99px; background: rgba(0, 0, 0, .55); font-family: var(--en); font-weight: 600; font-size: 11px; letter-spacing: .24em; }
+  .ba .l { left: 14px; } .ba .r { right: 14px; color: var(--ember); }
+  .cap { margin: 12px 0 0; font-size: 12.5px; color: var(--hush); text-align: center; }
+
+  /* The problem */
+  .tries { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 36px; }
+  .tries figure { margin: 0; }
+  .tries img { width: 100%; aspect-ratio: 3 / 4; object-fit: cover; object-position: 50% 68%; border-radius: 10px; }
+  .tries figcaption { margin-top: 10px; font-size: 12px; line-height: 1.5; color: var(--hush); }
+  .tries figcaption b { display: block; color: #ff8a78; font-size: 13.5px; }
+  .why { margin: 44px 0 0; padding: 26px 24px; border: 1px solid var(--line); border-radius: 16px; background: var(--panel); font-family: var(--serif); font-size: clamp(19px, 4.8vw, 26px); line-height: 1.7; }
+  .why small { display: block; margin-top: 10px; font-family: var(--jp); font-size: 13.5px; color: var(--hush); line-height: 1.8; }
+
+  /* Recipes */
+  .two { display: grid; gap: 34px; }
+  .shot { position: relative; aspect-ratio: 4 / 5; border-radius: 18px; overflow: hidden; background: #000; }
+  .shot img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 62%; transition: opacity .6s; }
+  .shot img + img { opacity: 0; }
+  .shot.flip img + img { opacity: 1; }
+  .shot p { position: absolute; left: 0; right: 0; bottom: 0; margin: 0; padding: 60px 18px 16px; background: linear-gradient(transparent, rgba(0, 0, 0, .8)); font-size: 13px; line-height: 1.6; color: var(--hush); }
+  .shot p b { display: block; font-size: 20px; color: var(--paper); letter-spacing: .04em; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 22px; }
+  .chips button { padding: 9px 15px; border-radius: 99px; border: 1px solid rgba(243, 238, 228, .32); background: rgba(243, 238, 228, .05); font-size: 14px; cursor: pointer; transition: background .2s, color .2s; }
+  .chips button.on { background: var(--paper); border-color: var(--paper); color: #111; font-weight: 700; }
+  .hint { margin: 14px 0 0; font-size: 12.5px; color: var(--hush); }
+
+  /* Tools: cards that scroll sideways on a phone. */
+  .rail { display: flex; gap: 14px; margin: 36px calc(var(--pad) * -1) 0; padding: 0 var(--pad) 10px; overflow-x: auto; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+  .rail::-webkit-scrollbar { display: none; }
+  .tool { flex: none; width: min(74vw, 300px); scroll-snap-align: center; }
+  .tool img { width: 100%; border-radius: 16px; border: 1px solid var(--line); }
+  .tool b { display: block; margin-top: 14px; font-size: 17px; }
+  .tool span { display: block; font-size: 13.5px; color: var(--hush); line-height: 1.7; }
+  .also { margin: 26px 0 0; font-size: 13.5px; color: var(--hush); }
+
+  /* Camera */
+  .phone { width: min(70vw, 300px); margin: 0 auto; border-radius: 40px; overflow: hidden; border: 2px solid #3a3a3e; box-shadow: 0 0 0 7px #050506, 0 30px 80px rgba(0, 0, 0, .6); }
+  .points { list-style: none; margin: 30px 0 0; padding: 0; }
+  .points li { padding: 22px 0; border-top: 1px solid var(--line); }
+  .points b { display: block; font-size: 19px; line-height: 1.5; }
+  .points span { display: block; margin-top: 6px; font-size: 14.5px; color: var(--hush); }
+  .points small { display: block; margin-top: 6px; font-size: 12px; color: rgba(243, 238, 228, .45); }
+
+  /* Price */
+  .price { text-align: center; }
+  .price .yen { margin: 26px 0 0; font-family: var(--en); font-weight: 700; font-size: clamp(110px, 34vw, 220px); line-height: 1; letter-spacing: -.02em; }
+  .price .yen i { font-style: normal; font-size: .52em; vertical-align: .32em; margin-right: .04em; color: var(--ember); }
+  .price .once { margin: 6px 0 0; font-family: var(--serif); font-size: clamp(24px, 6vw, 40px); }
+  .plans { display: grid; gap: 14px; margin-top: 40px; text-align: left; }
+  .plan { padding: 26px 24px; border-radius: 18px; border: 1px solid var(--line); background: var(--panel); }
+  .plan.paid { border-color: rgba(240, 115, 58, .6); }
+  .plan h3 { margin: 0; font-size: 14px; letter-spacing: .1em; color: var(--hush); font-weight: 600; }
+  .plan strong { display: block; font-family: var(--en); font-size: 38px; line-height: 1.3; }
+  .plan strong small { font-family: var(--jp); font-size: 14px; margin-left: 8px; color: var(--hush); font-weight: 600; }
+  .plan ul { margin: 14px 0 0; padding: 0; list-style: none; font-size: 14.5px; }
+  .plan li { padding-left: 1.5em; position: relative; margin-top: 6px; }
+  .plan li::before { content: "✓"; position: absolute; left: 0; color: var(--ember); font-weight: 700; }
+  .none { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin: 30px 0 0; padding: 0; list-style: none; }
+  .none li { padding: 8px 18px; border-radius: 99px; border: 1px solid rgba(243, 238, 228, .3); font-size: 14px; font-weight: 600; }
+
+  /* Private */
+  .private { background: var(--panel); }
+  .facts { display: grid; gap: 12px; margin-top: 34px; }
+  .facts div { padding: 22px 22px; border-radius: 16px; border: 1px solid var(--line); }
+  .facts b { display: block; font-size: 17px; }
+  .facts span { display: block; margin-top: 4px; font-size: 14px; color: var(--hush); }
+
+  /* The last ask */
+  .last { position: relative; text-align: center; isolation: isolate; overflow: clip; }
+  .last::before { content: ""; position: absolute; inset: 0; z-index: -2; background: url(assets/fine.jpg) center 62% / cover; }
+  .last::after { content: ""; position: absolute; inset: 0; z-index: -1; background: rgba(8, 8, 9, .74); }
+  .last img { width: 84px; height: 84px; border-radius: 20px; margin: 0 auto 22px; box-shadow: 0 14px 40px rgba(0, 0, 0, .6); }
+  .last .get { margin-top: 30px; }
+
+  footer { padding: 40px 0 120px; font-size: 12.5px; color: var(--hush); border-top: 1px solid var(--line); }
+  footer nav { display: flex; flex-wrap: wrap; gap: 8px 22px; margin-bottom: 18px; font-size: 13px; }
+  footer a { text-underline-offset: 3px; }
+  footer p { margin: 6px 0 0; }
+
+  /* On a phone the way to the store stays within reach. */
+  .dock { position: fixed; z-index: 20; left: 0; right: 0; bottom: 0; padding: 10px var(--pad) max(10px, env(safe-area-inset-bottom)); background: rgba(11, 11, 12, .88); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); border-top: 1px solid var(--line); display: flex; align-items: center; gap: 12px; transform: translateY(110%); transition: transform .4s; }
+  .dock.up { transform: none; }
+  .dock img { width: 40px; height: 40px; border-radius: 10px; }
+  .dock p { margin: 0; font-size: 12px; line-height: 1.4; color: var(--hush); white-space: nowrap; }
+  .dock p b { display: block; font-family: var(--en); font-size: 13px; letter-spacing: .06em; color: var(--paper); }
+  .dock a { margin-left: auto; padding: 10px 18px; border-radius: 99px; background: var(--paper); color: #111; font-weight: 700; font-size: 14px; text-decoration: none; white-space: nowrap; }
+
+  .rise { opacity: 0; transform: translateY(22px); transition: opacity .9s, transform .9s; }
+  .rise.in { opacity: 1; transform: none; }
+
+  @media (min-width: 900px) {
+    .hero { padding-top: 130px; }
+    .hero .wrap { grid-template-columns: 1.05fr .95fr; align-items: center; gap: 70px; }
+    .two { grid-template-columns: 1fr 1fr; align-items: center; gap: 70px; }
+    .two.flipped > :first-child { order: 2; }
+    .tries { gap: 22px; max-width: 760px; }
+    .rail { margin: 44px 0 0; padding: 0; overflow: visible; gap: 22px; }
+    .tool { width: auto; flex: 1; }
+    .plans { grid-template-columns: 1fr 1fr; max-width: 820px; margin-left: auto; margin-right: auto; }
+    .facts { grid-template-columns: repeat(3, 1fr); }
+    .dock { display: none; }
+    footer { padding-bottom: 50px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { transition: none !important; animation: none !important; }
+    .rise { opacity: 1; transform: none; }
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <img src="assets/icon.png" alt="" width="34" height="34"><b>POCKET COLOR</b>
+  <a href="https://apps.apple.com/jp/app/pocket-color/id6816624728">App Store</a>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="wrap">
+      <div>
+        <p class="kicker">iPhone 写真加工アプリ</p>
+        <h1><span class="nb">選ぶだけで、</span><span class="nb">写真が</span><span class="nb">映画の色になる。</span></h1>
+        <p class="lead">エモい写真にしたいのに、うまく加工できない。<br>POCKET COLOR は、プロの色づくりをワンタップに詰め込んだアプリです。</p>
+        <a class="get" href="https://apps.apple.com/jp/app/pocket-color/id6816624728">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" d="M12 4v11m0 0l-4.5-4.5M12 15l4.5-4.5M5 20h14"/></svg>
+          <span><small>App Store で</small>無料ダウンロード</span>
+        </a>
+        <p class="or"><a class="try" href="try/">入れる前に、ブラウザで試す<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" d="M5 12h14m0 0l-5-5m5 5l-5 5"/></svg></a></p>
+        <p class="fine"><span class="nb">編集はぜんぶ無料 ／</span> <span class="nb">月額なし・広告なし・登録なし ／</span> <span class="nb">iPhone・iPad（iOS 16以降）</span></p>
+      </div>
+      <div>
+        <div class="ba" id="ba" role="img" aria-label="同じ紅葉の写真の、撮ったままと POCKET COLOR で仕上げたあとの比較">
+          <img src="assets/fine.jpg" alt="" width="788" height="1400">
+          <img class="before" src="assets/original.jpg" alt="" width="788" height="1400">
+          <span class="bar"></span><span class="l">BEFORE</span><span class="r">AFTER</span>
+        </div>
+        <p class="cap">同じ1枚。左右に動かして比べられます</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <p class="kicker rise">Problem</p>
+      <h2 class="rise"><span class="nb">明るくしても、</span><span class="nb">彩度を上げても、</span><span class="nb">なんか違う。</span></h2>
+      <div class="tries rise">
+        <figure><img src="assets/f1-bright.jpg" alt="明るくしすぎて白っぽくなった紅葉の写真" loading="lazy" width="405" height="720"><figcaption>明るくしてみた<b>白っぽくて眠い</b></figcaption></figure>
+        <figure><img src="assets/f2-saturated.jpg" alt="彩度を上げすぎて不自然に赤い紅葉の写真" loading="lazy" width="405" height="720"><figcaption>彩度を上げてみた<b>色がギラギラ</b></figcaption></figure>
+        <figure><img src="assets/f3-cast.jpg" alt="フィルターで色あせてぼんやりした紅葉の写真" loading="lazy" width="405" height="720"><figcaption>フィルターをかけた<b>色あせただけ</b></figcaption></figure>
+      </div>
+      <p class="why rise">「あの色」の正体は、何十もの調整の積み重ね。<small>影はほんのり青く、光はやわらかく粘る。トーンカーブ、影と光への色のせ、色ごとの色相、粒子、光のにじみ。知らないと、たどり着けません。</small></p>
+    </div>
+  </section>
+
+  <section id="recipes">
+    <div class="wrap two">
+      <div class="rise">
+        <p class="kicker">How it works</p>
+        <h2>レシピを選ぶ。<br>それだけ。</h2>
+        <p class="lead">ひとつのレシピに、トーン・色のせ・粒子・光のにじみまでが一式。効き具合のつまみひとつで、ほんのり香らせることも、思いきり振ることもできます。</p>
+        <div class="chips" id="chips" role="group" aria-label="レシピ"></div>
+        <p class="hint">↑ タップして試せます（アプリの実際の現像結果）</p>
+        <p class="or"><a class="try" href="try/">自分の写真で試す（Web体験版）<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" d="M5 12h14m0 0l-5-5m5 5l-5 5"/></svg></a></p>
+      </div>
+      <div class="shot rise" id="shot">
+        <img src="assets/exp.jpg" alt="" loading="lazy" width="608" height="1080"><img alt="">
+        <p><b id="r-name">なし</b><span id="r-note">まだ何も当てていない写真</span></p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <p class="kicker rise">Pro tools</p>
+      <h2 class="rise"><span class="nb">仕上げは、</span><span class="nb">プロと同じ道具で。</span></h2>
+      <p class="lead rise">レシピの上から、いつも通りに追い込めます。道具は、すべて無料です。</p>
+      <div class="rail rise">
+        <div class="tool"><img src="assets/tool-curve.jpg" alt="トーンカーブの画面" loading="lazy" width="596" height="734"><b>トーンカーブ</b><span>階調は、指で描く。RGBと各色のポイントカーブ</span></div>
+        <div class="tool"><img src="assets/tool-wheels.jpg" alt="カラーホイールの画面" loading="lazy" width="596" height="734"><b>カラーホイール</b><span>影は青く、光は暖かく。4つのホイールで色をのせる</span></div>
+        <div class="tool"><img src="assets/tool-hsl.jpg" alt="HSLの画面" loading="lazy" width="596" height="734"><b>HSL</b><span>色ごとに、色相・彩度・輝度を動かす</span></div>
+        <div class="tool"><img src="assets/tool-grain.jpg" alt="フィルム粒子の画面" loading="lazy" width="596" height="734"><b>フィルム粒子</b><span>粒子は、色そのものを揺らす。乳剤は5種類</span></div>
+      </div>
+      <p class="also rise">ほかにも：マスクで部分補正 ／ RAW現像 ／ 自分の3D LUT（.cube） ／ 多重露光 ／ 動画も同じ色で</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap two flipped">
+      <div class="rise">
+        <p class="kicker">Camera</p>
+        <h2><span class="nb">撮る前から、</span><span class="nb">もう仕上がりの色。</span></h2>
+        <ul class="points">
+          <li><b>編集データを、そのままカメラへ</b><span>作った色・比率・背景を当てた画面を見ながら撮影。画面に出ている絵が、そのまま保存されます。写真も動画も。</span></li>
+          <li><b>スマホで、RAWが撮れる</b><span>センサーのデータをRAW（DNG）で記録。撮ったあとも、白飛びぎわまで粘って追い込めます。</span><small>※ ProRAW対応機種はProRAW、それ以外は広角1×のRAWで保存します</small></li>
+        </ul>
+      </div>
+      <div class="phone rise"><img src="assets/camera.jpg" alt="POCKET COLOR の撮影画面。ルックを当てたままのプレビュー" loading="lazy" width="506" height="1100"></div>
+    </div>
+  </section>
+
+  <section class="price" id="price">
+    <div class="wrap">
+      <p class="kicker rise">Price</p>
+      <h2 class="rise">編集は、ぜんぶ無料。</h2>
+      <p class="yen rise"><i>¥</i>500</p>
+      <p class="once rise">課金は、買い切りの1回だけ。</p>
+      <div class="plans rise">
+        <div class="plan">
+          <h3>無料のまま</h3>
+          <strong>¥0</strong>
+          <ul>
+            <li>編集・プレビューは制限なし</li>
+            <li>12のレシピ、プロの道具、撮影もすべて</li>
+            <li>書き出しは長辺2048px・品質30%まで</li>
+          </ul>
+        </div>
+        <div class="plan paid">
+          <h3>元の画質での書き出し</h3>
+          <strong>¥500<small>買い切り</small></strong>
+          <ul>
+            <li>写真も動画も、素材と同じ画素数で保存</li>
+            <li>最大4倍のアップスケール</li>
+            <li>追加料金なし。機種変更後も復元できます</li>
+          </ul>
+        </div>
+      </div>
+      <ul class="none rise"><li>月額なし</li><li>広告なし</li><li>アカウント登録なし</li></ul>
+    </div>
+  </section>
+
+  <section class="private">
+    <div class="wrap">
+      <p class="kicker rise">Private</p>
+      <h2 class="rise"><span class="nb">写真は、</span><span class="nb">どこにも送られない。</span></h2>
+      <div class="facts rise">
+        <div><b>すべて端末の中で</b><span>読み込みから書き出しまで、iPhoneとiPadの中だけで完結します。</span></div>
+        <div><b>登録もログインもなし</b><span>入れたらすぐ使えます。利用者の情報は集めません。</span></div>
+        <div><b>元の写真はそのまま</b><span>元のファイルは書き換えず、編集は自動で保存されます。</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="last">
+    <div class="wrap">
+      <img src="assets/icon.png" alt="" width="84" height="84" loading="lazy">
+      <h2><span class="nb">いつもの写真を、</span><span class="nb">映画のワンシーンに。</span></h2>
+      <a class="get" href="https://apps.apple.com/jp/app/pocket-color/id6816624728">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" d="M12 4v11m0 0l-4.5-4.5M12 15l4.5-4.5M5 20h14"/></svg>
+        <span><small>App Store で</small>無料ダウンロード</span>
+      </a>
+      <p class="or"><a class="try" href="try/">入れる前に、ブラウザで試す<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" d="M5 12h14m0 0l-5-5m5 5l-5 5"/></svg></a></p>
+      <p class="fine">iPhone・iPad（iOS 16以降）</p>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <nav>
+      <a href="/">合同会社たまご屋さん</a>
+      <a href="https://tamagoya-san.github.io/pocketcolor-lab-legal/legal/terms.html">利用規約</a>
+      <a href="https://tamagoya-san.github.io/pocketcolor-lab-legal/legal/privacy.html">プライバシーポリシー</a>
+      <a href="https://tamagoya-san.github.io/pocketcolor-lab-legal/legal/paid.html">有料機能について</a>
+      <a href="mailto:t.nishizawa@tamagoyasanllc.com">お問い合わせ</a>
+    </nav>
+    <p>© 2026 合同会社たまご屋さん / TAMAGOYASAN, LIMITED LIABILITY COMPANY</p>
+    <p>このページは解析ツールやCookieを使用していません。作例はすべて、このアプリで現像したものです。</p>
+    <p>Apple、App Store、iPhone、iPad は Apple Inc. の商標です。</p>
+  </div>
+</footer>
+
+<div class="dock" id="dock">
+  <img src="assets/icon.png" alt="" width="40" height="40">
+  <p><b>POCKET COLOR</b>編集はぜんぶ無料</p>
+  <a href="https://apps.apple.com/jp/app/pocket-color/id6816624728">無料で入手</a>
+</div>
+
+<script>
+(() => {
+  // Before and after: the line follows a finger sideways and leaves vertical scrolling alone.
+  const ba = document.getElementById('ba');
+  const cut = p => ba.style.setProperty('--x', Math.max(0, Math.min(100, p)) + '%');
+  const at = e => { const r = ba.getBoundingClientRect(); cut((e.clientX - r.left) / r.width * 100); };
+  let held = false;
+  ba.addEventListener('pointerdown', e => { held = true; ba.setPointerCapture(e.pointerId); at(e); });
+  ba.addEventListener('pointermove', e => { if (held) at(e); });
+  ['pointerup', 'pointercancel'].forEach(n => ba.addEventListener(n, () => { held = false; }));
+  // It opens on the photograph as taken and draws back, so the change is seen once without touching.
+  if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    cut(100);
+    const t0 = performance.now() + 500;
+    const tick = t => {
+      if (held) return;
+      const k = Math.max(0, Math.min(1, (t - t0) / 1600)), e = k < .5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2;
+      cut(100 - 62 * e);
+      if (k < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  } else cut(38);
+
+  // Recipes: the names and notes are the app's own, and each picture is what the app develops.
+  const recipes = [
+    ['exp', 'なし', 'まだ何も当てていない写真'],
+    ['r-blockbuster', 'ブロックバスター', '肌はオレンジ、影は深い青緑。映画館のスクリーンで見るあの色'],
+    ['r-neon', 'ネオンナイト', 'シアンに沈む影と、にじむ街の光。夜の撮影を一段シネマへ'],
+    ['r-nostalgia', 'ノスタルジー', '色あせたプリントの温度と粒子。70年代のアルバムをめくる感覚'],
+    ['r-nordic', 'ノルディック', '冷たく静かな空気感。色を抑えても、肌の血色は残します'],
+    ['r-golden', 'ゴールデンアワー', '夕陽の暖色と、光のまわりのハレーション'],
+    ['r-clear', '透明感', '明るく軽く、少しだけ涼しく。肌は白く澄んだまま'],
+    ['r-moodygreen', 'ムーディグリーン', '緑がかった重い影。サスペンス映画の沈んだ空気'],
+    ['r-bleach', '銀残し', '色が抜け、黒が締まる金属的な硬さ'],
+    ['r-softportrait', 'ソフトポートレート', 'やわらかいコントラストと、なめらかで暖かい肌'],
+    ['r-noir', 'ノワール', 'ほとんど色のない、深い黒と周辺に落ちる光'],
+    ['r-pastel', 'パステル', 'ふわっと浮いた黒と、ミルクを混ぜたような淡い色'],
+    ['r-vintage', 'ヴィンテージシネマ', '粘る影とハイライト、粒子とハレーション。昔の映画のプリント'],
+  ];
+  const chips = document.getElementById('chips'), shot = document.getElementById('shot');
+  function pick(i) {
+    const [file, name, note] = recipes[i], src = `assets/${file}.jpg`;
+    [...chips.children].forEach((c, n) => { c.classList.toggle('on', n === i); c.setAttribute('aria-pressed', n === i); });
+    document.getElementById('r-name').textContent = name;
+    document.getElementById('r-note').textContent = note;
+    const [a, b] = shot.querySelectorAll('img'), front = shot.classList.contains('flip') ? a : b;
+    // The picture is swapped only once it has arrived, so a slow connection never shows a blank.
+    const ready = new Image();
+    ready.onload = () => { if (!chips.children[i].classList.contains('on')) return; front.src = src; shot.classList.toggle('flip'); };
+    ready.src = src;
+  }
+  recipes.forEach(([, name], i) => {
+    const b = document.createElement('button');
+    b.type = 'button'; b.textContent = name; b.onclick = () => pick(i);
+    if (i === 0) b.className = 'on';
+    chips.appendChild(b);
+  });
+
+  const seen = new IntersectionObserver(entries => entries.forEach(e => {
+    if (!e.isIntersecting) return;
+    e.target.classList.add('in'); seen.unobserve(e.target);
+  }), { rootMargin: '0px 0px -8% 0px' });
+  document.querySelectorAll('.rise').forEach(el => seen.observe(el));
+  // The recipes are fetched as their section comes near, and the first one is shown so the page is not asking to be touched before it gives anything.
+  new IntersectionObserver((entries, o) => {
+    if (!entries[0].isIntersecting) return;
+    o.disconnect();
+    recipes.forEach(r => { new Image().src = `assets/${r[0]}.jpg`; });
+    setTimeout(() => { if (chips.children[0].classList.contains('on')) pick(1); }, 900);
+  }, { rootMargin: '300px' }).observe(shot);
+
+  // The bar at the foot appears once the first button has scrolled away, and steps aside for the last one.
+  const dock = document.getElementById('dock'), first = document.querySelector('.hero .get'), final = document.querySelector('.last .get');
+  let past = false, end = false;
+  const dockIt = () => dock.classList.toggle('up', past && !end);
+  new IntersectionObserver(([e]) => { past = !e.isIntersecting && e.boundingClientRect.top < 0; dockIt(); }).observe(first);
+  new IntersectionObserver(([e]) => { end = e.isIntersecting; dockIt(); }).observe(final);
+})();
+</script>
+</body>
+</html>

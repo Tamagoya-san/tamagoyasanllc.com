@@ -107,10 +107,17 @@ const UNIT = ['clarity', 'texture', 'dehaze', 'pcHighlights', 'pcLights', 'pcDar
 
 // The person's own values with the chosen recipe and the dials laid over them. The detailed controls keep
 // their own values and work on top, as in the app.
+//
+// A recipe is a direction, and so is a dial, which is why they add. Two recipes add the same way: here a
+// second one may share the amount with the first (style2, and styleMix for its share), which is what lets
+// the wheel on the page pass from one recipe to its neighbour without a step. The app chooses one.
 export function expand(values) {
   const layers = [];
-  const chosen = RECIPES.find(r => r.id === Math.round(values.style ?? 0));
-  if (chosen && chosen.id) layers.push([chosen.moves, chosen.tints, clamp(values.styleAmount ?? 0.8, 0, 1.2)]);
+  const recipe = id => RECIPES.find(r => r.id === Math.round(id ?? 0));
+  const chosen = recipe(values.style), other = recipe(values.style2);
+  const amount = clamp(values.styleAmount ?? 0.8, 0, 1.2), share = other && other.id ? clamp(values.styleMix ?? 0) : 0;
+  if (chosen && chosen.id && share < 1) layers.push([chosen.moves, chosen.tints, amount * (1 - share)]);
+  if (share > 0) layers.push([other.moves, other.tints, amount * share]);
   for (const dial of DIALS) {
     const w = clamp(values[dial.key] ?? 0, dial.twoWay ? -1 : 0, 1);
     if (Math.abs(w) > 0.0005) layers.push([dial.moves, dial.tints, w]);
@@ -475,7 +482,7 @@ export function bake(values, look, n) {
 // Everything a cube depends on, as one string: a grain or vignette dial moved must not bake it again.
 const SPATIAL = new Set(['shadows', 'highlights', 'grain', 'grainType', 'grainSize', 'clarity', 'glow', 'glowSize',
                          'glowThreshold', 'glowWarm', 'vignette', 'vignetteMid', 'vignetteRound', 'vignetteFeather',
-                         'style', 'styleAmount', 'skin', 'dehaze', 'texture', ...DIALS.map(d => d.key)]);
+                         'style', 'style2', 'styleMix', 'styleAmount', 'skin', 'dehaze', 'texture', ...DIALS.map(d => d.key)]);
 export function colourKey(values, look) {
   return look + '|' + Object.keys(values).filter(k => !SPATIAL.has(k)).sort().map(k => k + ':' + values[k]).join('|');
 }

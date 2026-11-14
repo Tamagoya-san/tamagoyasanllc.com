@@ -79,11 +79,15 @@ function tick(now) {
 // The canvas is as large as the picture fits in the space it has, and as fine as the screen, never finer
 // than the picture itself.
 function layout() {
-  const [w, h] = state.size, box = frame.getBoundingClientRect(), pad = camera.on ? 0 : 10;
+  const [w, h] = state.size, box = frame.getBoundingClientRect(), pad = camera.on ? 0 : document.body.classList.contains('big') ? 4 : 10;
   const k = Math.min((box.width - pad * 2) / w, (box.height - pad * 2) / h);
   if (!(k > 0)) return;
   const cw = Math.max(1, Math.floor(w * k)), ch = Math.max(1, Math.floor(h * k));
   view.style.width = cw + 'px'; view.style.height = ch + 'px';
+  // The words laid over the photograph are kept inside it: the name is set as large as its width allows,
+  // the longest being "ヴィンテージシネマ ×" with its spacing, about twelve characters wide.
+  frame.style.setProperty('--cw', cw + 'px'); frame.style.setProperty('--ch', ch + 'px');
+  frame.style.setProperty('--fit', clamp((cw - 16) / 12.2, 12, 24).toFixed(1) + 'px');
   const fine = Math.min(window.devicePixelRatio || 1, 3);
   const scale = Math.min(fine, Math.max(w, h) / Math.max(cw, ch), LONGEST / Math.max(cw, ch));
   const pw = Math.max(2, Math.round(cw * scale)), ph = Math.max(2, Math.round(ch * scale));
@@ -189,6 +193,20 @@ view.addEventListener('pointerdown', e => {
 for (const name of ['pointerup', 'pointercancel', 'lostpointercapture']) view.addEventListener(name, () => compare(false));
 view.addEventListener('contextmenu', e => e.preventDefault());
 
+// The photograph made large, and given back. A short tap on the large picture is the way back; holding it
+// still shows the original, as everywhere else.
+const grow = $('#grow'), bigNow = () => document.body.classList.contains('big');
+function setBig(on) {
+  document.body.classList.toggle('big', on);
+  grow.setAttribute('aria-pressed', String(on));
+  grow.setAttribute('aria-label', on ? '元の大きさに戻す' : '写真を大きく見る');
+  layout();
+}
+grow.addEventListener('click', () => setBig(!bigNow()));
+let tapAt = 0;
+view.addEventListener('pointerdown', () => { tapAt = performance.now(); });
+view.addEventListener('pointerup', () => { if (bigNow() && !state.comparing && performance.now() - tapAt < 250) setBig(false); });
+
 // ---------------------------------------------------------------------------------------------------------
 // The camera: the same grade over what the lens sees, and the frame taken becomes the photograph worked on.
 
@@ -212,6 +230,7 @@ async function startCamera(front = camera.front) {
   try { await lens.play(); } catch { /* the first frame shows once the browser lets it */ }
   stopDrift();
   camera.on = true; camera.size = '';
+  if (document.body.classList.contains('big')) setBig(false);
   document.body.classList.add('live');
   $('#tag').classList.add('gone');
   syncRecipes();
@@ -692,7 +711,7 @@ function sheet(...content) {
   card.querySelector('.shut').focus({ preventScroll: true });
   return card;
 }
-addEventListener('keydown', e => { if (e.key === 'Escape') closeSheet(); });
+addEventListener('keydown', e => { if (e.key === 'Escape') { closeSheet(); if (bigNow()) setBig(false); } });
 // What the app adds and where to get it. On a desk, where the App Store is a phone away, a code to read.
 function pitch(title, points) {
   return [

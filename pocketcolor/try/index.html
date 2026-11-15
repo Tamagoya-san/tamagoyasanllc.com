@@ -60,12 +60,8 @@
   #view { position: relative; display: block; border-radius: 6px; background: #000; touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
   .tag { position: absolute; left: 50%; top: max(10px, calc(50% - var(--ch, 100%) / 2 + 10px)); transform: translateX(-50%); max-width: calc(var(--cw, 100%) - 16px); margin: 0; padding: 4px 13px; border-radius: 99px; background: rgba(0, 0, 0, .55); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); font-size: 11.5px; color: var(--paper); white-space: nowrap; pointer-events: none; transition: opacity .3s; }
   .tag.gone { opacity: 0; }
-  /* The look by name over the photograph while the wheel moves, and a little of its colour behind. */
+  /* A little of the colour of the look behind the photograph. */
   .frame::before { content: ""; position: absolute; inset: 0; background: radial-gradient(ellipse at center, var(--glow, transparent), transparent 72%); opacity: .7; pointer-events: none; }
-  /* The name sits inside the photograph, near its foot, and is set as large as the photograph's width allows (--fit). */
-  .mix { position: absolute; z-index: 2; left: 50%; bottom: max(54px, calc(50% - var(--ch, 0px) / 2 + 12px)); transform: translateX(-50%); width: max-content; max-width: calc(var(--cw, 100%) - 16px); margin: 0; font-family: var(--serif); font-size: var(--fit, 19px); font-weight: 600; line-height: 1.35; letter-spacing: .08em; text-align: center; color: #fff; text-shadow: 0 2px 16px rgba(0, 0, 0, .95), 0 0 3px rgba(0, 0, 0, .9); opacity: 0; transition: opacity .6s; pointer-events: none; }
-  .mix.show { opacity: 1; transition-duration: .1s; }
-  .mix span { white-space: nowrap; }
   /* The photograph made large: everything but the picture steps aside. A tap on the picture brings it back. */
   .grow { position: absolute; z-index: 3; right: 10px; top: 10px; width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; background: rgba(0, 0, 0, .55); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); border: 1px solid rgba(243, 238, 228, .28); color: var(--paper); }
   .grow svg { width: 18px; height: 18px; }
@@ -245,7 +241,6 @@
         <svg class="out" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7"/></svg>
         <svg class="in" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10h-6V4M4 14h6v6M14 10l7-7M3 21l7-7"/></svg>
       </button>
-      <p class="mix" id="mix" aria-hidden="true"></p>
       <div class="samples" id="samples" role="group" aria-label="サンプル写真">
         <button type="button" data-sample="sample-1.jpg" style="background-image:url(sample-1.jpg)" aria-label="サンプル写真1 紅葉"></button>
         <button type="button" data-sample="sample-2.jpg" style="background-image:url(sample-2.jpg)" aria-label="サンプル写真2 植物"></button>

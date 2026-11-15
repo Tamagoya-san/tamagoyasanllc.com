@@ -84,10 +84,8 @@ function layout() {
   if (!(k > 0)) return;
   const cw = Math.max(1, Math.floor(w * k)), ch = Math.max(1, Math.floor(h * k));
   view.style.width = cw + 'px'; view.style.height = ch + 'px';
-  // The words laid over the photograph are kept inside it: the name is set as large as its width allows,
-  // the longest being "ヴィンテージシネマ ×" with its spacing, about twelve characters wide.
+  // The small label over the photograph is kept inside it.
   frame.style.setProperty('--cw', cw + 'px'); frame.style.setProperty('--ch', ch + 'px');
-  frame.style.setProperty('--fit', clamp((cw - 16) / 12.2, 12, 24).toFixed(1) + 'px');
   const fine = Math.min(window.devicePixelRatio || 1, 3);
   const scale = Math.min(fine, Math.max(w, h) / Math.max(cw, ch), LONGEST / Math.max(cw, ch));
   const pw = Math.max(2, Math.round(cw * scale)), ph = Math.max(2, Math.round(ch * scale));
@@ -358,7 +356,7 @@ function mixAt(a, r) {
   return { first, second, mix, amount };
 }
 
-const panel = $('#panel'), mixTag = $('#mix');
+const panel = $('#panel');
 const recipeNote = h('p', { class: 'note' });
 const lookNote = h('p', { class: 'note' });
 const mixLine = h('p', { class: 'mixline' });
@@ -459,9 +457,8 @@ function drawOrbit(now = performance.now()) {
   ctx.lineWidth = 1.5; ctx.strokeStyle = 'rgba(0, 0, 0, .45)'; ctx.beginPath(); ctx.arc(x, y, 9.5, 0, Math.PI * 2); ctx.stroke();
 }
 
-// What the wheel says, wherever it is said: the line over it, the name over the photograph, the recipes lit.
-let mixTimer = 0;
-function syncMix(announce = false) {
+// What the wheel says, wherever it is said: the line under it and the recipes lit. The photograph carries no words.
+function syncMix() {
   const m = mixAt(orbit.a, orbit.r), lead = m.mix > 0.5 ? m.second : m.first, name = id => RECIPES[id].name;
   const share = Math.round(m.mix * 100);
   mixLine.textContent = !m.first ? 'ホイールをなぞって、色を探す'
@@ -482,12 +479,6 @@ function syncMix(announce = false) {
     document.documentElement.style.setProperty('--glow', `rgba(${rgb.join(', ')}, ${(0.5 * Math.min(1, m.amount)).toFixed(3)})`);
   } else document.documentElement.style.setProperty('--glow', 'rgba(0, 0, 0, 0)');
   if (camera.on) cameraHint.textContent = m.first ? `${title} — 仕上がりの色を見ながら、そのまま撮れます` : '仕上がりの色を見ながら、そのまま撮れます';
-  if (!announce) return;
-  // Two names break between them and nowhere else.
-  mixTag.replaceChildren(...(m.second ? [h('span', {}, name(lead) + ' ×'), ' ', h('span', {}, name(lead === m.first ? m.second : m.first))] : [title]));
-  mixTag.classList.add('show');
-  clearTimeout(mixTimer);
-  mixTimer = setTimeout(() => mixTag.classList.remove('show'), 1300);
 }
 // The puck put somewhere, and the picture made to match.
 function setOrbit(a, r, moving = false) {
@@ -499,7 +490,7 @@ function setOrbit(a, r, moving = false) {
   for (const key of ['style', 'style2', 'styleMix', 'styleAmount']) delete v[key];
   if (m.first) { v.style = m.first; v.styleAmount = m.amount; }
   if (m.second) { v.style2 = m.second; v.styleMix = m.mix; }
-  syncMix(true);
+  syncMix();
   refresh(moving);
   animate();
 }
